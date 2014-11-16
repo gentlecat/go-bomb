@@ -27,6 +27,7 @@ of fields that you need:
 package giantbomb
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -54,15 +55,16 @@ var (
 )
 
 type Response struct {
-	Error                string
-	Limit                int
-	Offset               int
-	NumberOfPageResults  int
-	NumberOfTotalResults int
-	Results              []Result
+	Error                string   `json:"error"`
+	StatusCode           int      `json:"status_code"`
+	Version              string   `json:"version"`
+	Limit                int      `json:"limit"`
+	Offset               int      `json:"offset"`
+	NumberOfPageResults  int      `json:"number_of_page_results"`
+	NumberOfTotalResults int      `json:"number_of_total_results"`
+	Results              []Result `json:"results"`
 }
-
-type Result struct{}
+type Result interface{}
 
 // Pass empty string to resourceID if you don't need to specify it.
 func getBaseURL(resourceType string, resourceID string) string {
@@ -77,7 +79,7 @@ func getBaseURL(resourceType string, resourceID string) string {
 	return url
 }
 
-func Search(query string, limit int, page int, resources []string) ([]byte, error) {
+func Search(query string, limit int, page int, resources []string) (*Response, error) {
 	url := getBaseURL("search", "") +
 		"&query=\"" + query + "\"" +
 		"&limit=" + strconv.Itoa(limit) +
@@ -97,12 +99,17 @@ func Search(query string, limit int, page int, resources []string) ([]byte, erro
 		return nil, err
 	}
 
-	// TODO: Implement JSON parsing.
-	return body, nil
+	var res Response
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 // Platforms returns list of existing gaming platforms.
-func Platforms(limit int, offset int) ([]byte, error) {
+func Platforms(limit int, offset int) (*Response, error) {
 	url := getBaseURL("platforms", "") +
 		"&limit=" + strconv.Itoa(limit) +
 		"&offset=" + strconv.Itoa(offset)
@@ -120,6 +127,11 @@ func Platforms(limit int, offset int) ([]byte, error) {
 		return nil, err
 	}
 
-	// TODO: Implement JSON parsing.
-	return body, nil
+	var res Response
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
