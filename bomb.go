@@ -9,10 +9,20 @@ API provides interface to access all this information. You will need to get an
 API key to be able to use it. Information about getting your API key, terms of
 use and other useful info is available at https://www.giantbomb.com/api/.
 
+Now go build something, duder!
+
 This library is meant to simplify interactons with Giant Bomb API. After you
 get your API key, make sure to set Key variable to match it:
 
 	giantbomb.Key = "YOUR_API_KEY"
+
+There's a lot of data for you to get. It is usually a good idea to set a list
+of fields that you need:
+
+	giantbomb.FieldList = []string{
+		"name",
+		"platforms",
+	}
 */
 package giantbomb
 
@@ -38,8 +48,9 @@ const (
 )
 
 var (
-	Host = "https://www.giantbomb.com/api/"
-	Key  = "" // Your API key. Make sure to set this variable to match your key.
+	Host      = "https://www.giantbomb.com/api/"
+	Key       string   // Your API key. Make sure to set this variable to match your key.
+	FieldList []string // List of fields that determines data that you get in responses.
 )
 
 type Response struct {
@@ -55,11 +66,15 @@ type Result struct{}
 
 // Pass empty string to resourceID if you don't need to specify it.
 func getBaseURL(resourceType string, resourceID string) string {
-	start := Host + resourceType + "/"
+	url := Host + resourceType + "/"
 	if resourceID != "" {
-		start += resourceID + "/"
+		url += resourceID + "/"
 	}
-	return start + "?format=json&api_key=" + Key
+	url += "?format=json&api_key=" + Key
+	if len(FieldList) > 0 {
+		url += "&field_list=" + strings.Join(FieldList, ",")
+	}
+	return url
 }
 
 func Search(query string, limit int, page int, resources []string) ([]byte, error) {
