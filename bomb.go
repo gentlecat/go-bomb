@@ -1,3 +1,19 @@
+/*
+Package giantbomb implements a wrapper for Giant Bomb API.
+
+Giant Bomb is a video game website and wiki. Wiki contains a ton of information
+about video games and things related to them. This information is collected by
+volunteers, video game fans.
+
+API provides interface to access all this information. You will need to get an
+API key to be able to use it. Information about getting your API key, terms of
+use and other useful info is available at https://www.giantbomb.com/api/.
+
+This library is meant to simplify interactons with Giant Bomb API. After you
+get your API key, make sure to set Key variable to match it:
+
+	giantbomb.Key = "YOUR_API_KEY"
+*/
 package giantbomb
 
 import (
@@ -23,7 +39,7 @@ const (
 
 var (
 	Host = "https://www.giantbomb.com/api/"
-	Key  = "" // Your API key
+	Key  = "" // Your API key. Make sure to set this variable to match your key.
 )
 
 type Response struct {
