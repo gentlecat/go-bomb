@@ -100,3 +100,26 @@ func Search(query string, limit int, page int, resources []string) ([]byte, erro
 	// TODO: Implement JSON parsing.
 	return body, nil
 }
+
+// Platforms returns list of existing gaming platforms.
+func Platforms(limit int, offset int) ([]byte, error) {
+	url := getBaseURL("platforms", "") +
+		"&limit=" + strconv.Itoa(limit) +
+		"&offset=" + strconv.Itoa(offset)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", url, resp.Status))
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Implement JSON parsing.
+	return body, nil
+}
