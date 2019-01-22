@@ -1,5 +1,5 @@
 gofmt :
-	$(info Reformatting all source files...)
+	$(info Formatting all the code...)
 	go fmt ./...
 
 build :
