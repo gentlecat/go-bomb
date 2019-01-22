@@ -1,9 +1,9 @@
 /*
-Package giantbomb implements a wrapper for Giant Bomb API.
+Package giantbomb is a wrapper for the Giant Bomb API.
 
 Giant Bomb is a video game website and wiki. Wiki contains a ton of information
 about video games and things related to them. This information is collected by
-volunteers, video game fans.
+volunteers, video game fans. Check https://www.giantbomb.com/.
 
 API provides interface to access all this information. You will need to get an
 API key to be able to use it. Information about getting your API key, terms of
@@ -27,29 +27,12 @@ of fields that you need:
 package giantbomb
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-const (
-	ResourceTypeGame      = "game"
-	ResourceTypeFranchise = "franchise"
-	ResourceTypeCharacter = "character"
-	ResourceTypeConcept   = "concept"
-	ResourceTypeObject    = "object"
-	ResourceTypeLocation  = "location"
-	ResourceTypePerson    = "person"
-	ResourceTypeCompany   = "company"
-	ResourceTypeVideo     = "video"
-)
-
 var (
-	Host      = "https://www.giantbomb.com/api/"
+	Host      = "https://www.giantbomb.com"
 	Key       string   // Your API key. Make sure to set this variable to match your key.
 	FieldList []string // List of fields that determines data that you get in responses.
 )
@@ -66,9 +49,14 @@ type Response struct {
 }
 type Result interface{}
 
+type GiantBomb struct {
+	Client  *http.Client
+	baseURL string
+}
+
 // Pass empty string to resourceID if you don't need to specify it.
-func getBaseURL(resourceType string, resourceID string) string {
-	url := Host + resourceType + "/"
+func getResourcePath(baseURL, resourceType, resourceID string) string {
+	url := baseURL + "/api/" + resourceType + "/"
 	if resourceID != "" {
 		url += resourceID + "/"
 	}
@@ -77,61 +65,4 @@ func getBaseURL(resourceType string, resourceID string) string {
 		url += "&field_list=" + strings.Join(FieldList, ",")
 	}
 	return url
-}
-
-func Search(query string, limit int, page int, resources []string) (*Response, error) {
-	url := getBaseURL("search", "") +
-		"&query=\"" + query + "\"" +
-		"&limit=" + strconv.Itoa(limit) +
-		"&page=" + strconv.Itoa(page) +
-		"&resources=" + strings.Join(resources, ",")
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", url, resp.Status))
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var res Response
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
-}
-
-// Platforms returns list of existing gaming platforms.
-func Platforms(limit int, offset int) (*Response, error) {
-	url := getBaseURL("platforms", "") +
-		"&limit=" + strconv.Itoa(limit) +
-		"&offset=" + strconv.Itoa(offset)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", url, resp.Status))
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var res Response
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
 }
