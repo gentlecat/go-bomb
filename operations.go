@@ -2,7 +2,6 @@ package giantbomb
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/url"
@@ -10,7 +9,9 @@ import (
 )
 
 func (api *GBClient) Search(query string, limit int, page int, resources []string, extraParams url.Values) (*Response, error) {
-	if extraParams == nil { extraParams = make(url.Values)}
+	if extraParams == nil {
+		extraParams = make(url.Values)
+	}
 	extraParams["query"] = []string{query}
 	extraParams["limit"] = []string{strconv.Itoa(limit)}
 	extraParams["page"] = []string{strconv.Itoa(page)}
@@ -26,7 +27,7 @@ func (api *GBClient) Search(query string, limit int, page int, resources []strin
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", u, resp.Status))
+		return nil, fmt.Errorf("request to %s failed (%s)", u, resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -46,7 +47,9 @@ func (api *GBClient) Search(query string, limit int, page int, resources []strin
 
 // Platforms returns list of existing platforms.
 func (api *GBClient) Platforms(limit int, offset int, extraParams url.Values) (*Response, error) {
-	if extraParams == nil { extraParams = make(url.Values)}
+	if extraParams == nil {
+		extraParams = make(url.Values)
+	}
 	extraParams["limit"] = []string{strconv.Itoa(limit)}
 	extraParams["offset"] = []string{strconv.Itoa(offset)}
 
@@ -60,7 +63,7 @@ func (api *GBClient) Platforms(limit int, offset int, extraParams url.Values) (*
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", u, resp.Status))
+		return nil, fmt.Errorf("request to %s failed (%s)", u, resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)

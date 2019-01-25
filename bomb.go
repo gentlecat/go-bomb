@@ -18,16 +18,19 @@ import (
 	"net/url"
 )
 
+// Response object contains information returned from the API.
 type Response struct {
-	Error                string   `json:"error"`
-	StatusCode           int      `json:"status_code"`
-	Version              string   `json:"version"`
+	Results              []Result `json:"results"`                 // Zero or more items that match the filters specified
+	NumberOfTotalResults int      `json:"number_of_total_results"` // The number of total results matching the filter conditions specified
+	NumberOfPageResults  int      `json:"number_of_page_results"`  // The number of results on this page
 	Limit                int      `json:"limit"`
 	Offset               int      `json:"offset"`
-	NumberOfPageResults  int      `json:"number_of_page_results"`
-	NumberOfTotalResults int      `json:"number_of_total_results"`
-	Results              []Result `json:"results"`
+	Version              string   `json:"version"`
+	StatusCode           int      `json:"status_code"`
+	Error                string   `json:"error"` // A text string representing the status_code
 }
+
+// Result is an item returned from the API that matches the filters you specify.
 type Result interface{}
 
 type GBClient struct {
