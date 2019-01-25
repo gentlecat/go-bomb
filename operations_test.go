@@ -19,7 +19,7 @@ func TestSearch(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame})
+	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame}, nil)
 
 	assert.Nil(t, err, "There must be no errors")
 	assert.Equal(t, &Response{
@@ -34,7 +34,7 @@ func TestSearchWithError(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame})
+	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame}, nil)
 
 	assert.NotNil(t, err, "Error must be set")
 	assert.Nil(t, response, "Response shouldn't be set")
@@ -51,7 +51,7 @@ func TestPlatforms(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Platforms(10, 0)
+	response, err := api.Platforms(10, 0, nil)
 
 	assert.Nil(t, err, "There must be no errors")
 	assert.Equal(t, &Response{
@@ -66,7 +66,7 @@ func TestPlatformsWithError(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Platforms(10, 0)
+	response, err := api.Platforms(10, 0, nil)
 
 	assert.NotNil(t, err, "Error must be set")
 	assert.Nil(t, response, "Response shouldn't be set")
@@ -81,7 +81,7 @@ func TestPlatformsWithInvalidJSON(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Platforms(10, 0)
+	response, err := api.Platforms(10, 0, nil)
 
 	assert.NotNil(t, err, "Error must be set")
 	assert.Nil(t, response, "Response shouldn't be set")

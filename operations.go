@@ -10,6 +10,7 @@ import (
 )
 
 func (api *GBClient) Search(query string, limit int, page int, resources []string, extraParams url.Values) (*Response, error) {
+	if extraParams == nil { extraParams = make(url.Values)}
 	extraParams["query"] = []string{query}
 	extraParams["limit"] = []string{strconv.Itoa(limit)}
 	extraParams["page"] = []string{strconv.Itoa(page)}
@@ -45,6 +46,7 @@ func (api *GBClient) Search(query string, limit int, page int, resources []strin
 
 // Platforms returns list of existing platforms.
 func (api *GBClient) Platforms(limit int, offset int, extraParams url.Values) (*Response, error) {
+	if extraParams == nil { extraParams = make(url.Values)}
 	extraParams["limit"] = []string{strconv.Itoa(limit)}
 	extraParams["offset"] = []string{strconv.Itoa(offset)}
 
