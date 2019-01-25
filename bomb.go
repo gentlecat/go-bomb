@@ -39,7 +39,7 @@ type GBClient struct {
 	apiKey     string
 }
 
-// NewClient returns a new GiantBomb client instance.
+// NewClient returns a new GBClient instance that can be used for calling the API.
 func NewClient(apiKey string) *GBClient {
 	return &GBClient{
 		httpClient: &http.Client{},
