@@ -10,31 +10,12 @@ API key to be able to use it. Information about getting your API key, terms of
 use and other useful info is available at https://www.giantbomb.com/api/.
 
 Now go build something, duder!
-
-This library is meant to simplify interactons with Giant Bomb API. After you
-get your API key, make sure to set Key variable to match it:
-
-	giantbomb.Key = "YOUR_API_KEY"
-
-There's a lot of data for you to get. It is usually a good idea to set a list
-of fields that you need:
-
-	giantbomb.FieldList = []string{
-		"name",
-		"platforms",
-	}
 */
 package giantbomb
 
 import (
 	"net/http"
-	"strings"
-)
-
-var (
-	Host      = "https://www.giantbomb.com"
-	Key       string   // Your API key. Make sure to set this variable to match your key.
-	FieldList []string // List of fields that determines data that you get in responses.
+	"net/url"
 )
 
 type Response struct {
@@ -49,20 +30,41 @@ type Response struct {
 }
 type Result interface{}
 
-type GiantBomb struct {
-	Client  *http.Client
-	baseURL string
+type GBClient struct {
+	httpClient *http.Client
+	baseURL    string
+	apiKey     string
+}
+
+// NewClient returns a new GiantBomb client instance.
+func NewClient(apiKey string) *GBClient {
+	return &GBClient{
+		httpClient: &http.Client{},
+		baseURL: (&url.URL{
+			Scheme: "HTTPS",
+			Host:   "www.giantbomb.com",
+		}).String(),
+		apiKey: apiKey,
+	}
 }
 
 // Pass empty string to resourceID if you don't need to specify it.
-func getResourcePath(baseURL, resourceType, resourceID string) string {
-	url := baseURL + "/api/" + resourceType + "/"
+func (api *GBClient) generateRequestURL(resourceType, resourceID string, queryParams url.Values) (string, error) {
+	u, err := url.Parse(api.baseURL)
+	if err != nil {
+		return api.baseURL, err
+	}
+
+	// Overwriting mandatory parameters
+	queryParams["format"] = []string{"json"}
+	queryParams["api_key"] = []string{api.apiKey}
+	u.RawQuery = queryParams.Encode()
+
+	// and the path...
+	u.Path = "/api/" + resourceType + "/"
 	if resourceID != "" {
-		url += resourceID + "/"
+		u.Path += resourceID + "/"
 	}
-	url += "?format=json&api_key=" + Key
-	if len(FieldList) > 0 {
-		url += "&field_list=" + strings.Join(FieldList, ",")
-	}
-	return url
+
+	return u.String(), nil
 }

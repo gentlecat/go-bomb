@@ -18,7 +18,7 @@ func TestSearch(t *testing.T) {
 	}))
 	defer server.Close()
 
-	api := GiantBomb{server.Client(), server.URL}
+	api := GBClient{server.Client(), server.URL, ""}
 	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame})
 
 	assert.Nil(t, err, "There must be no errors")
@@ -33,7 +33,7 @@ func TestSearchWithError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	api := GiantBomb{server.Client(), server.URL}
+	api := GBClient{server.Client(), server.URL, ""}
 	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame})
 
 	assert.NotNil(t, err, "Error must be set")
@@ -50,7 +50,7 @@ func TestPlatforms(t *testing.T) {
 	}))
 	defer server.Close()
 
-	api := GiantBomb{server.Client(), server.URL}
+	api := GBClient{server.Client(), server.URL, ""}
 	response, err := api.Platforms(10, 0)
 
 	assert.Nil(t, err, "There must be no errors")
@@ -59,21 +59,18 @@ func TestPlatforms(t *testing.T) {
 	}, response, "Response should be same as expected")
 }
 
-
-
 func TestPlatformsWithError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 	}))
 	defer server.Close()
 
-	api := GiantBomb{server.Client(), server.URL}
+	api := GBClient{server.Client(), server.URL, ""}
 	response, err := api.Platforms(10, 0)
 
 	assert.NotNil(t, err, "Error must be set")
 	assert.Nil(t, response, "Response shouldn't be set")
 }
-
 
 func TestPlatformsWithInvalidJSON(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -83,7 +80,7 @@ func TestPlatformsWithInvalidJSON(t *testing.T) {
 	}))
 	defer server.Close()
 
-	api := GiantBomb{server.Client(), server.URL}
+	api := GBClient{server.Client(), server.URL, ""}
 	response, err := api.Platforms(10, 0)
 
 	assert.NotNil(t, err, "Error must be set")

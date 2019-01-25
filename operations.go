@@ -5,22 +5,27 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"strconv"
-	"strings"
 )
 
-func (api *GiantBomb) Search(query string, limit int, page int, resources []string) (*Response, error) {
-	url := getResourcePath(api.baseURL, "search", "") +
-		"&query=\"" + query + "\"" +
-		"&limit=" + strconv.Itoa(limit) +
-		"&page=" + strconv.Itoa(page) +
-		"&resources=" + strings.Join(resources, ",")
-	resp, err := api.Client.Get(url)
+func (api *GBClient) Search(query string, limit int, page int, resources []string, extraParams url.Values) (*Response, error) {
+	extraParams["query"] = []string{query}
+	extraParams["limit"] = []string{strconv.Itoa(limit)}
+	extraParams["page"] = []string{strconv.Itoa(page)}
+	extraParams["resources"] = resources
+
+	u, err := api.generateRequestURL("search", "", extraParams)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := api.httpClient.Get(u)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", url, resp.Status))
+		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", u, resp.Status))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -38,17 +43,22 @@ func (api *GiantBomb) Search(query string, limit int, page int, resources []stri
 	return &res, nil
 }
 
-// Platforms returns list of existing gaming platforms.
-func (api *GiantBomb) Platforms(limit int, offset int) (*Response, error) {
-	url := getResourcePath(api.baseURL, "platforms", "") +
-		"&limit=" + strconv.Itoa(limit) +
-		"&offset=" + strconv.Itoa(offset)
-	resp, err := api.Client.Get(url)
+// Platforms returns list of existing platforms.
+func (api *GBClient) Platforms(limit int, offset int, extraParams url.Values) (*Response, error) {
+	extraParams["limit"] = []string{strconv.Itoa(limit)}
+	extraParams["offset"] = []string{strconv.Itoa(offset)}
+
+	u, err := api.generateRequestURL("platforms", "", extraParams)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := api.httpClient.Get(u)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", url, resp.Status))
+		return nil, errors.New(fmt.Sprintf("Request to %s failed (%s)!", u, resp.Status))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
