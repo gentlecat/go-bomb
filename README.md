@@ -1,8 +1,9 @@
 # GiantBomb API wrapper for Go
 
-[![Build Status](https://travis-ci.org/gentlecat/giantbomb.svg)](https://travis-ci.org/gentlecat/giantbomb)
+[![Travis CI](https://img.shields.io/travis/gentlecat/go-bomb.svg?style=flat-square)](https://travis-ci.org/gentlecat/go-bomb)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://godoc.org/go.roman.zone/go-bomb)
 
-This package is a wrapper for the Giant Bomb API.
+**This package is a wrapper for the Giant Bomb API written in Go.**
 
 Giant Bomb is a video game website and wiki. Wiki contains a ton of information
 about video games and things related to them. This information is collected by
@@ -17,13 +18,13 @@ Now go build something, duder!
 ## Installation
 
 ```bash
-$ go get go.roman.zone/giantbomb
+$ go get go.roman.zone/go-bomb
 ```
 
 ## Usage
 
 ```go
-import "go.roman.zone/giantbomb"
+import "go.roman.zone/go-bomb"
 ```
 
-Complete documentation is available at http://godoc.org/github.com/gentlecat/go-giantbomb.
+Complete documentation is available at https://godoc.org/go.roman.zone/go-bomb.
