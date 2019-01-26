@@ -14,6 +14,9 @@ Now go build something, duder!
 package giantbomb
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -49,6 +52,48 @@ func NewClient(apiKey string) *GBClient {
 		}).String(),
 		apiKey: apiKey,
 	}
+}
+
+// Get provides a generic way to make calls to the API with a specific resource
+// type and ID.
+//
+// resourceType argument is mandatory and should be a valid resource type. You
+// can use Resource* constants within the same package for reference.
+// resourceID is optional (pass an empty string if it's not needed).
+// parameters are also optional (can be nil).
+func (api *GBClient) Get(resourceType, resourceID string, parameters url.Values) (*Response, error) {
+
+	if parameters == nil {
+		parameters = make(url.Values)
+	}
+
+	u, err := api.generateRequestURL(resourceType, resourceID, parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := api.httpClient.Get(u)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("request to %s failed (%s)", u, resp.Status)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var res Response
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 // Pass empty string to resourceID if you don't need to specify it.

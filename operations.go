@@ -1,13 +1,13 @@
 package giantbomb
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/url"
 	"strconv"
 )
 
+// Search does searching. ;)
+// You can specify a list of resources that needs to be returned. See Resource*
+// constants within the same package for reference.
 func (api *GBClient) Search(query string, limit int, page int, resources []string, extraParams url.Values) (*Response, error) {
 	if extraParams == nil {
 		extraParams = make(url.Values)
@@ -17,32 +17,7 @@ func (api *GBClient) Search(query string, limit int, page int, resources []strin
 	extraParams["page"] = []string{strconv.Itoa(page)}
 	extraParams["resources"] = resources
 
-	u, err := api.generateRequestURL("search", "", extraParams)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := api.httpClient.Get(u)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request to %s failed (%s)", u, resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var res Response
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	return api.Get("search", "", extraParams)
 }
 
 // Platforms returns list of existing platforms.
@@ -53,30 +28,5 @@ func (api *GBClient) Platforms(limit int, offset int, extraParams url.Values) (*
 	extraParams["limit"] = []string{strconv.Itoa(limit)}
 	extraParams["offset"] = []string{strconv.Itoa(offset)}
 
-	u, err := api.generateRequestURL("platforms", "", extraParams)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := api.httpClient.Get(u)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request to %s failed (%s)", u, resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var res Response
-	err = json.Unmarshal(body, &res)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	return api.Get("platforms", "", extraParams)
 }
