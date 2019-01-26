@@ -19,7 +19,7 @@ func TestSearch(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame}, nil)
+	response, err := api.Search("test", 10, 1, []string{ResourceGame}, nil)
 
 	assert.Nil(t, err, "There must be no errors")
 	assert.Equal(t, &Response{
@@ -34,7 +34,7 @@ func TestSearchWithError(t *testing.T) {
 	defer server.Close()
 
 	api := GBClient{server.Client(), server.URL, ""}
-	response, err := api.Search("test", 10, 1, []string{ResourceTypeGame}, nil)
+	response, err := api.Search("test", 10, 1, []string{ResourceGame}, nil)
 
 	assert.NotNil(t, err, "Error must be set")
 	assert.Nil(t, response, "Response shouldn't be set")
