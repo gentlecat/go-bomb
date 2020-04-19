@@ -37,20 +37,20 @@ type Response struct {
 type Result interface{}
 
 type GBClient struct {
-	httpClient *http.Client
-	baseURL    string
-	apiKey     string
+	HttpClient *http.Client
+	BaseURL    string
+	APIKey     string
 }
 
 // NewClient returns a new GBClient instance that can be used for calling the API.
 func NewClient(apiKey string) *GBClient {
 	return &GBClient{
-		httpClient: &http.Client{},
-		baseURL: (&url.URL{
+		HttpClient: &http.Client{},
+		BaseURL: (&url.URL{
 			Scheme: "HTTPS",
 			Host:   "www.giantbomb.com",
 		}).String(),
-		apiKey: apiKey,
+		APIKey: apiKey,
 	}
 }
 
@@ -72,7 +72,7 @@ func (api *GBClient) Get(resourceType, resourceID string, parameters url.Values)
 		return nil, err
 	}
 
-	resp, err := api.httpClient.Get(u)
+	resp, err := api.getHttpClient().Get(u)
 	if err != nil {
 		return nil, err
 	}
@@ -98,14 +98,14 @@ func (api *GBClient) Get(resourceType, resourceID string, parameters url.Values)
 
 // Pass empty string to resourceID if you don't need to specify it.
 func (api *GBClient) generateRequestURL(resourceType, resourceID string, queryParams url.Values) (string, error) {
-	u, err := url.Parse(api.baseURL)
+	u, err := url.Parse(api.BaseURL)
 	if err != nil {
-		return api.baseURL, err
+		return api.BaseURL, err
 	}
 
 	// Overwriting mandatory parameters
 	queryParams["format"] = []string{"json"}
-	queryParams["api_key"] = []string{api.apiKey}
+	queryParams["api_key"] = []string{api.APIKey}
 	u.RawQuery = queryParams.Encode()
 
 	// and the path...
@@ -115,4 +115,11 @@ func (api *GBClient) generateRequestURL(resourceType, resourceID string, queryPa
 	}
 
 	return u.String(), nil
+}
+
+func (api *GBClient) getHttpClient() *http.Client {
+	if api.HttpClient == nil {
+		return http.DefaultClient
+	}
+	return api.HttpClient
 }
