@@ -1,8 +1,5 @@
 # GiantBomb API wrapper for Go
 
-[![Travis CI](https://img.shields.io/travis/gentlecat/go-bomb.svg?style=flat-square)](https://travis-ci.org/gentlecat/go-bomb)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://godoc.org/go.roman.zone/go-bomb)
-
 **This package is a wrapper for the Giant Bomb API written in Go.**
 
 Giant Bomb is a video game website and wiki. Wiki contains a ton of information
